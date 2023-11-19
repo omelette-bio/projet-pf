@@ -4,6 +4,7 @@ let rec take k l = match l with
   | x::xs -> x::(take (k-1) xs)
 
 let ngrammes (k: int) (l: 'a list) : 'a list list =
+  if k <= 0 then raise (Invalid_argument "ngrammes");
   let rec ngrammes_aux (k: int) (l: 'a list) (acc: 'a list list) : 'a list list =
     match l with
     | [] -> acc
