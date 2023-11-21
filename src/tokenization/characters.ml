@@ -36,7 +36,6 @@ module Tokenizer = struct
            | exception Invalid_argument _ -> raise (DecodingError hd)
     in decode_aux voc ids ""
  
-  (* must return char list *)
   let learn batch =
     let voc = ref [] in
     let rec learn_aux batch voc = match batch with
