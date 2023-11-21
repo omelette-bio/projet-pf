@@ -35,10 +35,20 @@ module Tokenizer = struct
         | None -> raise (DecodingError hd)
     in decode_aux voc ids ""
  
+  (* must return char list *)
   let learn batch =
-    ignore batch; 
-    failwith "todo"
-
+    let voc = ref [] in
+    let rec learn_aux batch voc = match batch with
+      | [] -> !voc
+      | hd::tl -> 
+        let len = String.length hd in
+        for i=0 to len-1 do
+          match index !voc hd.[i] with
+          | Some _ -> ()
+          | None -> voc := !voc @ [hd.[i]]
+        done;
+        learn_aux tl voc
+    in learn_aux batch voc
 end
 
 module TokenizerCheckType : Definitions.Tokenizer.TOKENIZER = Tokenizer
