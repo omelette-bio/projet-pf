@@ -30,9 +30,9 @@ module Tokenizer = struct
     let rec decode_aux voc ids decoded = match ids with
       | [] -> decoded
       | hd::tl -> match List.nth_opt voc hd with
-           | Some c -> decode_aux voc tl (decoded ^ (String.make 1 c))
-           | None -> raise (DecodingError hd)
-           | exception Invalid_argument _ -> raise (DecodingError hd)
+          | Some c -> decode_aux voc tl (decoded ^ (String.make 1 c))
+          | None -> raise (DecodingError hd)
+          | exception Invalid_argument _ -> raise (DecodingError hd)
     in decode_aux voc ids ""
  
   let learn batch =

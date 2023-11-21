@@ -29,33 +29,61 @@ module Tokenizer = struct
     in aux start
 
   let alpha_blocks s = 
-    let rec aux s start = 
+    let rec aux start = 
       if start >= String.length s then []
       else 
         let end_index = first_non_alpha_from s start in
         let word = String.sub s start (end_index - start) in
-        if String.length word = 0 then (String.sub s start 1, start)::(aux s (start+1))
-        else (String.sub s start (String.length word), start)::(aux s end_index)
-    in aux s 0
+        if String.length word = 0 then (String.sub s start 1, start)::(aux (start+1))
+        else (String.sub s start (String.length word), start)::(aux end_index)
+    in aux 0
 
-  (*
-  voc = [("hello", 13); (" ", 4); ("world", 7); ("!", 12)]
-  s = "hello world!!"
-  encode voc s = [13; 4; 7; 12; 12]
-  *)
+  let sep_words s =
+    let rec aux start =
+      if start >= String.length s then []
+      else
+        let end_index = first_non_alpha_from s start in
+        let word = String.sub s start (end_index - start) in
+        if String.length word = 0 then (String.sub s start 1)::(aux (start+1))
+        else (String.sub s start (String.length word))::(aux end_index)
+    in aux 0
+
   let encode voc s =
-    ignore (voc, s);
-    failwith "todo"
+    let words = sep_words s in
+    let rec aux = function
+      | [] -> []
+      | w::ws -> 
+        begin
+          try (List.assoc w voc)::(aux ws)
+          with Not_found -> raise (EncodingError (w^(String.concat "" ws)))
+        end
+    in aux words
 
   exception DecodingError of int
 
+
+  let find_key voc w = 
+    let rec aux = function
+      | [] -> None
+      | (w', i)::ws -> if i = w then Some w' else aux ws
+    in aux voc
+
   let decode voc ids = 
-    ignore (voc, ids);
-    failwith "todo"
+    let rec decode_aux voc ids decoded = match ids with
+    | [] -> decoded
+    | hd::tl -> match find_key voc hd with
+        | Some c -> decode_aux voc tl (decoded ^ c)
+        | None -> raise (DecodingError hd)
+  in decode_aux voc ids ""
 
   let learn batch = 
-    ignore (batch);
-    failwith "todo"
+    let voc = ref [] in
+    let rec learn_aux batch voc = match batch with
+      | [] -> !voc
+      | hd::tl -> 
+        voc := !voc @ (alpha_blocks hd);
+        learn_aux tl voc
+    in learn_aux batch voc
 
 end
 
