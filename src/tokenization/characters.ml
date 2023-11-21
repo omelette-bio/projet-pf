@@ -20,7 +20,6 @@ module Tokenizer = struct
     for i=0 to len-1 do
       match index voc s.[i] with
       | Some j -> encoded := !encoded @ [j]
-      (* raise an error with the remaining part of the string *)
       | None -> raise (EncodingError (Printf.sprintf "%s" (String.sub s i (len-i))))
     done;
     !encoded

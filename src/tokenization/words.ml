@@ -21,16 +21,12 @@ module Tokenizer = struct
 
     
   let first_non_alpha_from s start =
-    (* renvoie l'indice du premier caractère non alphabetique 
-       de la chaine s en partant de l'indice start
-       si ce caractère n'existe pas, renvoie la longueur de s 
-       exemples:
-        - `first_non_alpha_from "hello world" 3` renvoie 5
-        - `first_non_alpha_from "hello world" 5` renvoie 5
-        - `first_non_alpha_from "hello world" 6` renvoie 11       
-       *)
-    ignore (s, start);
-    failwith "todo (hint)"
+    let len = String.length s in
+    let rec aux i = 
+      if i >= len then len
+      else if is_alpha s.[i] then aux (i+1)
+      else i
+    in aux start
       
 
   let alpha_blocks s = 
@@ -43,7 +39,7 @@ module Tokenizer = struct
     ignore s;
     failwith "todo (hint)"
 
-  let encode voc s =
+    let encode voc s =
     ignore (voc, s);
     failwith "todo"
 
