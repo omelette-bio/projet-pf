@@ -27,19 +27,23 @@ module Tokenizer = struct
       else if is_alpha s.[i] then aux (i+1)
       else i
     in aux start
-      
 
   let alpha_blocks s = 
-    (* renvoie la liste des couples mot-position de la chaine s 
-      exemples:
-      - `alpha_blocks "hello world"` renvoie `[("hello", 0); (" ", 5); ("world", 6)]`
-      - `alpha_blocks "a-b..."` renvoie 
-        `[("a", 0); ("-", 1); ("b", 2); (".", 3); (".", 4); (".", 5)]`
-    *)
-    ignore s;
-    failwith "todo (hint)"
+    let rec aux s start = 
+      if start >= String.length s then []
+      else 
+        let end_index = first_non_alpha_from s start in
+        let word = String.sub s start (end_index - start) in
+        if String.length word = 0 then (String.sub s start 1, start)::(aux s (start+1))
+        else (String.sub s start (String.length word), start)::(aux s end_index)
+    in aux s 0
 
-    let encode voc s =
+  (*
+  voc = [("hello", 13); (" ", 4); ("world", 7); ("!", 12)]
+  s = "hello world!!"
+  encode voc s = [13; 4; 7; 12; 12]
+  *)
+  let encode voc s =
     ignore (voc, s);
     failwith "todo"
 
