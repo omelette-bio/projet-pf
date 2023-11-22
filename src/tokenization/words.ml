@@ -86,7 +86,7 @@ module Tokenizer = struct
   let find_couple voc w =
     let rec aux = function
       | [] -> false
-      | hd::tl -> if hd = w then true else aux tl
+      | (k,_)::tl -> if k = w then true else aux tl
     in aux voc
 
   (* doesnt work, to fix *)
@@ -96,12 +96,9 @@ module Tokenizer = struct
     match batch with
     | [] -> voc
     | hd :: tl ->
-      let updated_voc =
-        match find_couple voc (hd, i) with
-        | true -> voc (* No change to vocabulary if the couple is found *)
-        | false -> voc @ [(hd, i)] (* Add the new couple to the vocabulary *)
-      in
-      learn_aux tl updated_voc (i + 1) (* Recursive call with updated vocabulary and index *)
+      match find_couple voc hd with
+      | true -> learn_aux tl voc i;
+      | false -> learn_aux tl (voc@[(hd,i)]) (i + 1)
   in
   learn_aux batch2 [] 0
 
