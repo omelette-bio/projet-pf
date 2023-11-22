@@ -76,14 +76,30 @@ module Tokenizer = struct
         | None -> raise (DecodingError hd)
   in decode_aux voc ids ""
 
-  let learn batch = 
-    let voc = ref [] in
-    let rec learn_aux batch voc = match batch with
-      | [] -> !voc
-      | hd::tl -> 
-        voc := !voc @ (alpha_blocks hd);
-        learn_aux tl voc
-    in learn_aux batch voc
+  let concatenate s =
+    let rec aux = function
+      | [] -> ""
+      | hd::[] -> hd
+      | hd::tl -> hd ^ " " ^ (aux tl)
+    in aux s
+
+  let find_couple voc w =
+    let rec aux = function
+      | [] -> false
+      | hd::tl -> if hd = w then true else aux tl
+    in aux voc
+
+  (* doesnt work, to fix *)
+  let learn batch =
+    let batch2 = sep_words (concatenate batch) in
+    let rec learn_aux batch voc i = match batch with
+      | [] -> voc
+      | hd::tl ->
+        match find_couple voc (hd,i) with
+        | true -> learn_aux tl voc (i+1);
+        | false -> learn_aux tl (voc@[(hd,i)]) (i+1);
+      learn_aux tl voc i+1
+      in learn_aux batch2 [] 0
 
 end
 
