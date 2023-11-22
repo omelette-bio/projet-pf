@@ -91,15 +91,20 @@ module Tokenizer = struct
 
   (* doesnt work, to fix *)
   let learn batch =
-    let batch2 = sep_words (concatenate batch) in
-    let rec learn_aux batch voc i = match batch with
-      | [] -> voc
-      | hd::tl ->
-        match find_couple voc (hd,i) with
-        | true -> learn_aux tl voc (i+1);
-        | false -> learn_aux tl (voc@[(hd,i)]) (i+1);
-      learn_aux tl voc i+1
-      in learn_aux batch2 [] 0
+  let batch2 = sep_words (concatenate batch) in
+  let rec learn_aux batch voc i =
+    match batch with
+    | [] -> voc
+    | hd :: tl ->
+      let updated_voc =
+        match find_couple voc (hd, i) with
+        | true -> voc (* No change to vocabulary if the couple is found *)
+        | false -> voc @ [(hd, i)] (* Add the new couple to the vocabulary *)
+      in
+      learn_aux tl updated_voc (i + 1) (* Recursive call with updated vocabulary and index *)
+  in
+  learn_aux batch2 [] 0
+
 
 end
 
