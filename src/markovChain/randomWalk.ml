@@ -13,7 +13,7 @@ let normalize ed =
             | _ -> tw
          in 
          if total_weight = 0 then {token = hd.token; weight = hd.weight; dest = hd.dest}::(aux tl total_weight)
-         else {token = hd.token; weight = int_of_float( (float_of_int hd.weight /. float_of_int total_weight)*.10000. ); dest = hd.dest}::(aux tl total_weight)
+         else {token = hd.token; weight = int_of_float( (float_of_int hd.weight /. float_of_int total_weight)*.10_000. ); dest = hd.dest}::(aux tl total_weight)
    in for i = 0 to Array.length t - 1 do
       t.(i) <- aux t.(i) (-1)
    done;
@@ -34,7 +34,7 @@ let random_walk ~length ?(start = 0) mc =
       | _ when i = length -> []
       | _ ->
          try
-            let cur_token, next_token = find_next_token current_token (Random.int 10000) in
+            let cur_token, next_token = find_next_token current_token (Random.int 10_000) in
             cur_token :: aux (i + 1) t.(next_token)
          with _ -> []
          in aux 0 t.(start);;
