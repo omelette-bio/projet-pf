@@ -89,18 +89,17 @@ module Tokenizer = struct
       | (k,_)::tl -> if k = w then true else aux tl
     in aux voc
 
-  (* doesnt work, to fix *)
   let learn batch =
-  let batch2 = sep_words (concatenate batch) in
-  let rec learn_aux batch voc i =
-    match batch with
-    | [] -> voc
-    | hd :: tl ->
-      match find_couple voc hd with
-      | true -> learn_aux tl voc i;
-      | false -> learn_aux tl (voc@[(hd,i)]) (i + 1)
-  in
-  learn_aux batch2 [] 0
+    let batch2 = sep_words (concatenate batch) in
+    let rec learn_aux batch voc i =
+      match batch with
+      | [] -> voc
+      | hd :: tl ->
+        match find_couple voc hd with
+        | true -> learn_aux tl voc i;
+        | false -> learn_aux tl (voc@[(hd,i)]) (i + 1)
+    in
+    learn_aux batch2 [] 0
 
 
 end
