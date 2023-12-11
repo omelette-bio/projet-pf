@@ -1,10 +1,11 @@
 open Tokenization.Words
 open Tokenization.Ngrammes
-open MarkovChain.Learner
-open MarkovChain.RandomWalk
+open Learner
+open RandomWalk
 
 let token_of_arc src dst =
-  string_of_int src ^ string_of_int dst
+  ignore dst;
+  string_of_int src
 
 let run ~files ~window_size ~output_length = 
   let rec get_files_content = function
@@ -28,4 +29,5 @@ let run ~files ~window_size ~output_length =
   let encoded = List.flatten (encode_texts files_content) in
   let encoded_ngrammes = ngrammes window_size encoded in
   let mc = learn_markov_chain ~token_of_arc:token_of_arc ~max_state_id:(List.length encoded) ~walks:encoded_ngrammes in
-  random_walk ~length:output_length mc
+  let final = List.map (fun i -> int_of_string i) (random_walk ~length:output_length mc) in
+  Tokenizer.decode voc final
