@@ -75,12 +75,34 @@ module Tokenizer = struct
         | None -> raise (DecodingError hd)
   in decode_aux voc ids ""
 
+ (*  let concatenate s =
+    let rec aux = function
+      | [] -> ""
+      | hd::[] -> hd
+      | hd::tl -> hd ^ " " ^ (aux tl)
+    in aux s *)
+
   let find_couple voc w =
     let rec aux = function
       | [] -> false
       | (k,_)::tl -> if k = w then true else aux tl
     in aux voc
 
+  (* passe les tests *)
+
+  (* let learn batch =
+    let batch2 = sep_words (String.concat " " batch) in
+    let rec learn_aux batch voc i =
+      match batch with
+      | [] -> voc
+      | hd :: tl ->
+        match find_couple voc hd with
+        | true -> learn_aux tl voc i;
+        | false -> learn_aux tl (voc@[(hd,i)]) (i + 1)
+    in
+    learn_aux batch2 [] 0 *)
+
+    (* passe pas les tests mais fonctionne quand même avec des Hashtbl*)
     let learn batch =
       let batch2 = alpha_blocks (String.concat " " batch) in
       let voc = Hashtbl.create 10 in
