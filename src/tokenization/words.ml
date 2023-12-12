@@ -34,8 +34,8 @@ module Tokenizer = struct
       else 
         let end_index = first_non_alpha_from s start in
         let word = String.sub s start (end_index - start) in
-        if String.length word = 0 then (String.sub s start 1, start)::(aux (start+1))
-        else (String.sub s start (String.length word), start)::(aux end_index)
+        if String.length word = 0 then String.sub s start 1::(aux (start+1))
+        else String.sub s start (String.length word)::(aux end_index)
     in aux 0
 
   let sep_words s =
@@ -61,7 +61,6 @@ module Tokenizer = struct
 
   exception DecodingError of int
 
-
   let find_key voc w = 
     let rec aux = function
       | [] -> None
@@ -76,44 +75,23 @@ module Tokenizer = struct
         | None -> raise (DecodingError hd)
   in decode_aux voc ids ""
 
-  let concatenate s =
-    let rec aux = function
-      | [] -> ""
-      | hd::[] -> hd
-      | hd::tl -> hd ^ " " ^ (aux tl)
-    in aux s
-
   let find_couple voc w =
     let rec aux = function
       | [] -> false
       | (k,_)::tl -> if k = w then true else aux tl
     in aux voc
 
-  let learn batch =
-    let batch2 = sep_words (concatenate batch) in
-    let rec learn_aux batch voc i =
-      match batch with
-      | [] -> voc
-      | hd :: tl ->
-        match find_couple voc hd with
-        | true -> learn_aux tl voc i;
-        | false -> learn_aux tl (voc@[(hd,i)]) (i + 1)
-    in
-    learn_aux batch2 [] 0
-
-    (* let learn batch =
-      let batch2 = sep_words (String.concat "" batch) in
+    let learn batch =
+      let batch2 = alpha_blocks (String.concat " " batch) in
       let voc = Hashtbl.create 10 in
-      let rec learn_aux batch i =
-        match batch with
+      let rec learn_aux i batch = match batch with
         | [] -> ()
         | hd::tl ->
-          match Hashtbl.find voc hd with
-          | _ -> ()
-          | exception Not_found -> Hashtbl.add voc hd i; learn_aux tl (i+1)
-      in learn_aux batch2 0;
-      List.of_seq(Hashtbl.to_seq voc) *)
-
+          match Hashtbl.find_opt voc hd with
+          | Some _ -> learn_aux (i) tl;
+          | None -> Hashtbl.add voc hd i; learn_aux (i+1) tl;
+        in learn_aux 0 batch2;
+      List.of_seq(Hashtbl.to_seq voc)
 
 end
 
