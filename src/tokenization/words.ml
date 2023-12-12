@@ -101,6 +101,19 @@ module Tokenizer = struct
     in
     learn_aux batch2 [] 0
 
+    (* let learn batch =
+      let batch2 = sep_words (String.concat "" batch) in
+      let voc = Hashtbl.create 10 in
+      let rec learn_aux batch i =
+        match batch with
+        | [] -> ()
+        | hd::tl ->
+          match Hashtbl.find voc hd with
+          | _ -> ()
+          | exception Not_found -> Hashtbl.add voc hd i; learn_aux tl (i+1)
+      in learn_aux batch2 0;
+      List.of_seq(Hashtbl.to_seq voc) *)
+
 
 end
 
