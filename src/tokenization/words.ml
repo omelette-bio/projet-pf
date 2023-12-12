@@ -6,6 +6,7 @@ module Tokenizer = struct
 
   exception EncodingError of string
 
+  module SS = Set.Make(String)
 
   let is_alpha = function 
   | 'a' .. 'z' | 'A' .. 'Z'  -> true 
@@ -37,6 +38,17 @@ module Tokenizer = struct
         if String.length word = 0 then String.sub s start 1::(aux (start+1))
         else String.sub s start (String.length word)::(aux end_index)
     in aux 0
+
+  (*  let alpha_blocks s = 
+    let blocks = SS.empty in
+    let rec aux start set = 
+      if start >= String.length s then List.of_seq (SS.to_seq set)
+      else
+        let end_index = first_non_alpha_from s start in
+        let word = String.sub s start (end_index - start) in
+        if String.length word = 0 then begin (aux (start+1) (SS.add (String.sub s start 1) set)); end
+        else aux end_index (SS.add (String.sub s start (String.length word)) set )
+    in aux 0 blocks *)
 
   let sep_words s =
     let rec aux start =
