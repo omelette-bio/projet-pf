@@ -29,17 +29,8 @@ module Tokenizer = struct
       else i
     in aux start
 
-  let alpha_blocks s = 
-    let rec aux start = 
-      if start >= String.length s then []
-      else 
-        let end_index = first_non_alpha_from s start in
-        let word = String.sub s start (end_index - start) in
-        if String.length word = 0 then String.sub s start 1::(aux (start+1))
-        else String.sub s start (String.length word)::(aux end_index)
-    in aux 0
 
-  (*  let alpha_blocks s = 
+  let alpha_blocks s = 
     let blocks = SS.empty in
     let rec aux start set = 
       if start >= String.length s then List.of_seq (SS.to_seq set)
@@ -48,28 +39,28 @@ module Tokenizer = struct
         let word = String.sub s start (end_index - start) in
         if String.length word = 0 then begin (aux (start+1) (SS.add (String.sub s start 1) set)); end
         else aux end_index (SS.add (String.sub s start (String.length word)) set )
-    in aux 0 blocks *)
+    in aux 0 blocks
 
-  let sep_words s =
-    let rec aux start =
-      if start >= String.length s then []
-      else
-        let end_index = first_non_alpha_from s start in
-        let word = String.sub s start (end_index - start) in
-        if String.length word = 0 then (String.sub s start 1)::(aux (start+1))
-        else (String.sub s start (String.length word))::(aux end_index)
-    in aux 0
 
   let encode voc s =
-    let words = sep_words s in
-    let rec aux = function
-      | [] -> []
-      | w::ws -> 
-        begin
-          try (List.assoc w voc)::(aux ws)
-          with Not_found -> raise (EncodingError (w^(String.concat "" ws)))
-        end
-    in aux words
+    let rec aux s i =
+      if i >= String.length s then []
+      else 
+        let end_index = first_non_alpha_from s i in
+        let word = String.sub s i (end_index - i) in
+        match String.length word with
+          | 0 -> 
+          begin
+            try (List.assoc (String.sub s i 1) voc)::(aux s (i+1))
+            with Not_found -> raise (EncodingError (String.sub s i ((String.length s) - i) ))
+          end
+          | _ -> 
+          begin
+            try (List.assoc word voc)::(aux s end_index)
+            with Not_found -> raise (EncodingError (String.sub s i ((String.length s) - i) ))
+          end
+      in aux s 0
+          
 
   exception DecodingError of int
 
@@ -87,22 +78,17 @@ module Tokenizer = struct
         | None -> raise (DecodingError hd)
   in decode_aux voc ids ""
 
- (*  let concatenate s =
-    let rec aux = function
-      | [] -> ""
-      | hd::[] -> hd
-      | hd::tl -> hd ^ " " ^ (aux tl)
-    in aux s *)
+  
+  (* passe les tests *)
 
-  let find_couple voc w =
+  (* let find_couple voc w =
     let rec aux = function
       | [] -> false
       | (k,_)::tl -> if k = w then true else aux tl
     in aux voc
 
-  (* passe les tests *)
 
-  (* let learn batch =
+  let learn batch =
     let batch2 = sep_words (String.concat " " batch) in
     let rec learn_aux batch voc i =
       match batch with
@@ -115,6 +101,7 @@ module Tokenizer = struct
     learn_aux batch2 [] 0 *)
 
     (* passe pas les tests mais fonctionne quand même avec des Hashtbl*)
+    
     let learn batch =
       let batch2 = alpha_blocks (String.concat " " batch) in
       let voc = Hashtbl.create 10 in
