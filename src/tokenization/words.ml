@@ -49,13 +49,11 @@ module Tokenizer = struct
         let end_index = first_non_alpha_from s i in
         let word = String.sub s i (end_index - i) in
         match String.length word with
-          | 0 -> 
-          begin
+          | 0 -> begin
             try (List.assoc (String.sub s i 1) voc)::(aux s (i+1))
             with Not_found -> raise (EncodingError (String.sub s i ((String.length s) - i) ))
           end
-          | _ -> 
-          begin
+          | _ -> begin
             try (List.assoc word voc)::(aux s end_index)
             with Not_found -> raise (EncodingError (String.sub s i ((String.length s) - i) ))
           end
