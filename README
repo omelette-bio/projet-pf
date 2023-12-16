@@ -10,5 +10,6 @@ yeux ou devenir Je plus chant lumière; pensée sujet les croyais les être adie
 
 
 KNOWN ISSUES
-The test of words_learn won't pass because I used Hash Tables but it doesn't keep the order, so the test fails.
+The test of words_learn won't pass because I used HashTables but it doesn't keep the order, so the test fails,
+but it still works so I kept the one that works in case
 And swann leads to a stack overflow

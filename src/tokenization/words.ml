@@ -6,8 +6,6 @@ module Tokenizer = struct
 
   exception EncodingError of string
 
-  module SS = Set.Make(String)
-
   let is_alpha = function 
   | 'a' .. 'z' | 'A' .. 'Z'  -> true 
   | c -> begin
@@ -29,18 +27,23 @@ module Tokenizer = struct
       else i
     in aux start
 
-
   let alpha_blocks s = 
-    let blocks = SS.empty in
-    let rec aux start set = 
-      if start >= String.length s then List.of_seq (SS.to_seq set)
+    let rec aux i l =
+      if i >= String.length s then l
       else
-        let end_index = first_non_alpha_from s start in
-        let word = String.sub s start (end_index - start) in
-        if String.length word = 0 then begin (aux (start+1) (SS.add (String.sub s start 1) set)); end
-        else aux end_index (SS.add (String.sub s start (String.length word)) set )
-    in aux 0 blocks
-
+        let end_index = first_non_alpha_from s i in
+        let len = end_index - i in
+        match len with
+        | 0 -> begin 
+          match List.mem (String.sub s i 1) l with
+            | true -> aux (i+1) l
+            | false -> aux (i+1) ((String.sub s i 1)::l);
+          end
+        | _ -> 
+          match List.mem (String.sub s i len) l with
+            | true -> aux end_index l
+            | false -> aux end_index ((String.sub s i len)::l)
+      in List.rev(aux 0 [])
 
   let encode voc s =
     let rec aux s i =
@@ -79,28 +82,18 @@ module Tokenizer = struct
   
   (* passe les tests *)
 
-  (* let find_couple voc w =
-    let rec aux = function
-      | [] -> false
-      | (k,_)::tl -> if k = w then true else aux tl
-    in aux voc
-
-
   let learn batch =
-    let batch2 = sep_words (String.concat " " batch) in
+    let batch2 = alpha_blocks (String.concat " " batch) in
     let rec learn_aux batch voc i =
       match batch with
       | [] -> voc
-      | hd :: tl ->
-        match find_couple voc hd with
-        | true -> learn_aux tl voc i;
-        | false -> learn_aux tl (voc@[(hd,i)]) (i + 1)
+      | hd :: tl -> learn_aux tl (voc@[(hd,i)]) (i+1)
     in
-    learn_aux batch2 [] 0 *)
+    learn_aux batch2 [] 0
 
-    (* passe pas les tests mais fonctionne quand même avec des Hashtbl*)
+  (* passe pas les tests mais fonctionne quand même avec des Hashtbl*)
     
-    let learn batch =
+   (*  let learn batch =
       let batch2 = alpha_blocks (String.concat " " batch) in
       let voc = Hashtbl.create 10 in
       let rec learn_aux i batch = match batch with
@@ -110,7 +103,7 @@ module Tokenizer = struct
           | Some _ -> learn_aux (i) tl;
           | None -> Hashtbl.add voc hd i; learn_aux (i+1) tl;
         in learn_aux 0 batch2;
-      List.of_seq(Hashtbl.to_seq voc)
+      List.of_seq(Hashtbl.to_seq voc) *)
 
 end
 
