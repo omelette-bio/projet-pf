@@ -1,8 +1,5 @@
 open Definitions.MarkovChain
 
-(* prend une markov chain et renvoie une markov chain avec le poids des arretes entre 0 et 1, 
-   une markov chain est une array de liste de edge hd est une liste d'elements composés des champs token, weight et dest
-   *)
 let normalize ed = 
    let MarkovChain t = ed in
    let rec aux l tw = match l with
@@ -30,8 +27,7 @@ let rec find_next_token tokens rand =
 let random_walk ~length ?(start = 0) mc =
    let t = normalize mc in
    let rec aux i current_token = match current_token with
-      | [] -> []
-      | _ when i = length -> []
+      | [] | _ when i = length -> []
       | _ ->
          try
             let cur_token, next_token = find_next_token current_token (Random.int 10_000) in
