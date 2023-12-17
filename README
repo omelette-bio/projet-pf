@@ -1,5 +1,5 @@
 FEATURES
-Random text generation with Markov Chains
+Génération de textes aléatoires en Ocaml à l'aide de chaînes de Markov
 
 TESTS
   with jojo_eng.txt
@@ -10,4 +10,5 @@ yeux ou devenir Je plus chant lumière; pensée sujet les croyais les être adie
 
 
 KNOWN ISSUES
-Generating texts with swann.txt leads to a stack overflow
+Générer un texte avec swann.txt génère un stack overflow
+Quelques difficultés avec l'aléatoire de random_walk, j'ai passé les coeff à 10000 pour résoudre les problèmes d'approximation
