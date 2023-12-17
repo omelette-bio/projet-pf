@@ -36,7 +36,7 @@ module Tokenizer = struct
  
   let learn batch =
     let voc = ref [] in
-    let rec learn_aux batch voc = match batch with
+    let rec aux batch voc = match batch with
       | [] -> !voc
       | hd::tl -> 
         let len = String.length hd in
@@ -45,8 +45,8 @@ module Tokenizer = struct
           | Some _ -> ()
           | None -> voc := !voc @ [hd.[i]]
         done;
-        learn_aux tl voc
-    in learn_aux batch voc
+        aux tl voc
+    in aux batch voc
 end
 
 module TokenizerCheckType : Definitions.Tokenizer.TOKENIZER = Tokenizer
