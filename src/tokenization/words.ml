@@ -18,7 +18,6 @@ module Tokenizer = struct
     in String.contains accented_characters c
   end
 
-    
   let first_non_alpha_from s start =
     let len = String.length s in
     let rec aux i = 

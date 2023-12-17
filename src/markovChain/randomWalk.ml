@@ -1,7 +1,7 @@
 open Definitions.MarkovChain
 
-let normalize ed = 
-   let MarkovChain t = ed in
+let normalize mc = 
+   let MarkovChain t = mc in
    let rec aux l tw = match l with
       | [] -> []
       | hd::tl ->
@@ -34,7 +34,3 @@ let random_walk ~length ?(start = 0) mc =
             cur_token :: aux (i + 1) t.(next_token)
          with _ -> []
          in aux 0 t.(start);;
-
-
-
-random_walk ~length:10 mc_smaller_example
